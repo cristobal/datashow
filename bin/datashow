@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 var argv   = require('minimist')(process.argv.slice(2))
     colors = require('colors'),
+    fs     = require('fs'),
     _      = require('lodash'),
     stdout = process.stdout;
 
@@ -12,10 +13,11 @@ OPTIONS\n\
   --repeat=number  The number of times to loop default 1\n\
   --speed=number   The speed to print in default 1000 ms\n\
   --color=color    Optional color to use\n\
+  --file=file      Will use a tokens input\n\
   --help           Print this help\n");
 }
 
-if (_.size(argv._) === 0 || argv.help) {
+if ((_.size(argv._) === 0 || _.has(argv, 'help')) && !_.has(argv, 'file')) {
   help();
   process.exit(0);
 }
@@ -53,11 +55,9 @@ argv.parseColor = function (key) {
   return null;
 };
 
-
 function utime() {
   return +new Date();
 }
-
 
 var index  = 0,
     count  = 0,
@@ -67,6 +67,9 @@ var index  = 0,
     tokens = argv._.concat(),
     color  = argv.parseColor('color');
 
+if (_.has(argv, 'file')) {
+	tokes = fs.readFileSync(argv.file).toString().split(/(\r|\n\|r\n)/);
+}
 
 if (tokens.length === 1) {
   var line = argv._.join(" ");
@@ -106,5 +109,4 @@ var intervalId = setInterval(function loop() {
   if (count == repeat) {
     clearInterval(intervalId);
   }
-
 });
