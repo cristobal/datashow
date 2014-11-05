@@ -2,10 +2,6 @@
   "name": "datashow",
   "version": "1.0.0",
   "description": "Datashow Terminal Output",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [
     "datashow",
     "terminal",
@@ -13,7 +9,15 @@
   ],
   "author": "cristobal@dabed.org",
   "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "bin": {
     "datashow": "bin/datashow"
+  },
+  "dependencies": {
+    "colors": "^1.0.3",
+    "lodash": "^2.4.1",
+    "minimist": "^1.1.0"
   }
 }

@@ -1,26 +1,82 @@
 #!/usr/bin/env node
+var argv   = require('minimist')(process.argv.slice(2))
+    colors = require('colors'),
+    _      = require('lodash'),
+    stdout = process.stdout;
 
-var config = {
-  iterations: 5, // number of iterations
-  wait: 100,       // ms between each newline
-  line: "datashow"
+function help() {
+  stdout.write(
+    "Usage: datashow [OPTIONS] token token2 token3 ... \n\
+\n\
+OPTIONS\n\
+  --repeat=number  The number of times to loop default 1\n\
+  --speed=number   The speed to print in default 1000 ms\n\
+  --color=color    Optional color to use\n\
+  --help           Print this help\n");
+}
+
+if (_.size(argv._) === 0 || argv.help) {
+  help();
+  process.exit(0);
+}
+
+argv.get = function (key, defaultValue) {
+  if (_.has(argv, key)) {
+    return argv[key];
+  }
+
+  return defaultValue
 };
 
-var start = 0,
-    stop  = 1,
-    count = 0,
-    line  = config.line,
-    total = config.iterations,
-    size  = config.line.length,
-    wait  = config.wait,
-    time  = null;
+argv.parseNumber = function(key, defaultValue, asInt) {
+  var value = Number(this.get(key, defaultValue));
+  if (_.isNaN(value)) {
+    value = defaultValue;
+  }
+
+  if (asInt) {
+    value = parseInt(value, 10)  ;
+  }
+
+  return value;
+};
+
+argv.parseColor = function (key) {
+  if (!_.has(argv, key)) {
+    return null;
+  }
+
+  if (_.has(colors, argv[key])) {
+    return colors[argv[key]];
+  }
+
+  return null;
+};
+
 
 function utime() {
   return +new Date();
 }
 
+
+var index  = 0,
+    count  = 0,
+    repeat = argv.parseNumber('repeat', 1, true),
+    speed  = argv.parseNumber('speed',  1000),
+    time   = null,
+    tokens = argv._.concat(),
+    color  = argv.parseColor('color');
+
+
+if (tokens.length === 1) {
+  var line = argv._.join(" ");
+  tokens = line.split("").map(function (value, index, self) {
+    return line.substring(0, index + 1);
+  });
+}
+
 function isNextTick() {
-  if (!time || utime() - time >= wait) {
+  if (!time || (utime() - time >= speed)) {
     time = utime();
     return true;
   }
@@ -28,23 +84,27 @@ function isNextTick() {
   return false;
 }
 
-function write(line, start, stop) {
-  console.log(
-    line.substring(start, stop));
+function writeNextToken() {
+  var message = tokens[index++];
+  if (color) {
+    stdout.write(color(message + "\n"));
+  }
+  else {
+    console.log(message);
+  }
+
+  if (index >= tokens.length) {
+    index  = 0;
+    count += 1;
+  }
 }
 
 var intervalId = setInterval(function loop() {
   if (isNextTick()) {
-    write(line, start, stop);
-    stop += 1;
+    writeNextToken();
   }
 
-  if (stop > size) {
-    stop = 1;
-    count += 1;
-  }
-
-  if (count == total) {
+  if (count == repeat) {
     clearInterval(intervalId);
   }
 
