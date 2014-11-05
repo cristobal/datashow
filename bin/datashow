@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+
+var config = {
+  iterations: 5, // number of iterations
+  wait: 100,       // ms between each newline
+  line: "datashow"
+};
+
+var start = 0,
+    stop  = 1,
+    count = 0,
+    line  = config.line,
+    total = config.iterations,
+    size  = config.line.length,
+    wait  = config.wait,
+    time  = null;
+
+function utime() {
+  return +new Date();
+}
+
+function isNextTick() {
+  if (!time || utime() - time >= wait) {
+    time = utime();
+    return true;
+  }
+
+  return false;
+}
+
+function write(line, start, stop) {
+  console.log(
+    line.substring(start, stop));
+}
+
+var intervalId = setInterval(function loop() {
+  if (isNextTick()) {
+    write(line, start, stop);
+    stop += 1;
+  }
+
+  if (stop > size) {
+    stop = 1;
+    count += 1;
+  }
+
+  if (count == total) {
+    clearInterval(intervalId);
+  }
+
+});

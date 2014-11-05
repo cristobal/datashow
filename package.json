@@ -1,0 +1,19 @@
+{
+  "name": "datashow",
+  "version": "1.0.0",
+  "description": "Datashow Terminal Output",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "datashow",
+    "terminal",
+    "output"
+  ],
+  "author": "cristobal@dabed.org",
+  "license": "MIT",
+  "bin": {
+    "datashow": "bin/datashow"
+  }
+}
