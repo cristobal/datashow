@@ -68,7 +68,15 @@ var index  = 0,
     color  = argv.parseColor('color');
 
 if (_.has(argv, 'file')) {
-	tokes = fs.readFileSync(argv.file).toString().split(/(\r|\n\|r\n)/);
+	tokens =
+		fs.readFileSync(argv.file)
+			.toString().split(/(\r|\n|\r\n)/)
+			.filter(function (token) {
+				if (token === "" || token.replace(/(\r|\n|\r\n)/, "") === "") {
+					return false;
+				}
+				return true;
+			});
 }
 
 if (tokens.length === 1) {
