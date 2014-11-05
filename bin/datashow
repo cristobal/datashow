@@ -85,12 +85,12 @@ function isNextTick() {
 }
 
 function writeNextToken() {
-  var message = tokens[index++];
+  var message = tokens[index++] + "\n";
   if (color) {
-    message = color(message + "\n");
+    message = color(message);
   }
 
-  stdout.write(message + "\n");
+  stdout.write(message);
 
   if (index >= tokens.length) {
     index  = 0;
